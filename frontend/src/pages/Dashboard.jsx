@@ -332,6 +332,25 @@ function Dashboard() {
                 )}
               </div>
             )}
+
+            <h3 style={{ marginTop: "25px" }}>
+              Dependency Paths
+            </h3>
+
+            <div className="paths-container">
+              {Object.entries(
+                simulationResult.paths || {}
+              ).map(([service, path]) => (
+                <div
+                  key={service}
+                  className="path-card"
+                >
+                  <h4>{service}</h4>
+
+                  <p>{path.join(" → ")}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}
