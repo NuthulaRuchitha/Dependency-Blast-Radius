@@ -4,6 +4,9 @@ import ReactFlow, {Controls, Background,} from "reactflow";
 import { Link } from "react-router-dom";
 import "reactflow/dist/style.css";
 import "../App.css";
+import CreateService from "../componenets/CreateService";
+import EditService from "../componenets/EditService";
+import dagre from "dagre";
 
 const DashboardCard = ({
   title,
@@ -22,9 +25,47 @@ function Dashboard() {
   const [selectedService, setSelectedService] = useState("");
   const [simulationResult, setSimulationResult] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [editingService, setEditingService] = useState(null);
+
+  const refreshServices = async () => {
+    try {
+      const servicesRes = await axios.get(
+        "http://localhost:5000/api/services"
+      );
+
+      const dependenciesRes = await axios.get(
+        "http://localhost:5000/api/dependencies"
+      );
+
+      setServices(servicesRes.data);
+      setDependencies(dependenciesRes.data);
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const deleteService = async (id) => {
+    try {
+      await axios.delete(
+        `http://localhost:5000/api/services/${id}`
+      );
+
+      await refreshServices();
+
+      const dependenciesRes = await axios.get(
+        "http://localhost:5000/api/dependencies"
+      );
+
+      setDependencies(dependenciesRes.data);
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
-    const loadData = async () => {
+    async function fetchData() {
       try {
         const servicesRes = await axios.get(
           "http://localhost:5000/api/services"
@@ -39,9 +80,9 @@ function Dashboard() {
       } catch (error) {
         console.error(error);
       }
-    };
+    }
 
-    loadData();
+    fetchData();
   }, []);
 
   const simulateFailure = async () => {
@@ -77,32 +118,77 @@ function Dashboard() {
     return "low-criticality";
   };
 
-  const nodePositions = {
-    "Auth Service": { x: 250, y: 50 },
-    "Payment Service": { x: 250, y: 150 },
-    "Notification Service": { x: 250, y: 250 },
-    "User Service": { x: 50, y: 150 },
+  const dagreGraph = new dagre.graphlib.Graph();
+
+  dagreGraph.setDefaultEdgeLabel(() => ({}));
+
+  const getLayoutedElements = (nodes, edges) => {
+    dagreGraph.setGraph({
+      rankdir: "TB",
+    });
+
+    nodes.forEach((node) => {
+      dagreGraph.setNode(node.id, {
+        width: 180,
+        height: 50,
+      });
+    });
+
+    edges.forEach((edge) => {
+      dagreGraph.setEdge(
+        edge.source,
+        edge.target
+      );
+    });
+
+    dagre.layout(dagreGraph);
+
+    return nodes.map((node) => {
+      const position =
+        dagreGraph.node(node.id);
+
+      return {
+        ...node,
+        position: {
+          x: position.x - 90,
+          y: position.y - 25,
+        },
+      };
+    });
   };
 
-  const nodes = services.map((service) => ({
-    id: service._id,
-    data: {
-      label: service.name,
-    },
-    position:
-      nodePositions[service.name] || {
-        x: 250,
-        y: 100,
-      },
-      draggable: false,
-  }));
+  const edges = dependencies
+    .filter(
+      (dep) =>
+        dep.sourceService &&
+        dep.targetService
+    )
+    .map((dep) => ({
+      id: dep._id,
+      source: dep.sourceService._id,
+      target: dep.targetService._id,
+      animated: true,
+    }));
 
-  const edges = dependencies.map((dep) => ({
-    id: dep._id,
-    source: dep.sourceService._id,
-    target: dep.targetService._id,
-    animated: true,
-  }));
+  const rawNodes = services.map(
+    (service) => ({
+      id: service._id,
+      data: {
+        label: service.name,
+      },
+      position: {
+        x: 0,
+        y: 0,
+      },
+    })
+  );
+
+const nodes =
+  getLayoutedElements(
+    rawNodes,
+    edges
+  );
+
   const healthyServices = services.filter(
     (service) => service.status === "HEALTHY"
   ).length;
@@ -117,11 +203,29 @@ function Dashboard() {
 
   return (
     <div className="app-container">
+
+      <div className="navbar">
+        <h2>🚀 Blast Radius Analyzer</h2>
+
+        <div className="nav-links">
+          <Link to="/">Dashboard</Link>
+          <Link to="/history">History</Link>
+        </div>
+      </div>
+
+      {editingService && (
+        <EditService
+          service={editingService}
+          onClose={() =>
+            setEditingService(null)
+          }
+          onUpdated={refreshServices}
+        />
+      )}
+
       <h1 className="dashboard-title">
         Dependency Blast Radius Dashboard
       </h1>
-
-      <br/>
 
       <p className="dashboard-subtitle">
         Analyze service dependencies and simulate
@@ -177,51 +281,73 @@ function Dashboard() {
           className="critical-card"
         />
       </div>
-      <div className="search-container">
-        <input
+      <div className="section-card">
+
+        <CreateService onServiceCreated={refreshServices}/>
+
+        <h2 className="section-title">
+          Registered Services
+        </h2>
+
+        <div className="search-container">
+          <input
             type="text"
-            placeholder="Search services..."
+            placeholder="🔍 Search services..."
             value={searchTerm}
             onChange={(e) =>
-            setSearchTerm(e.target.value)
+              setSearchTerm(e.target.value)
             }
             className="search-input"
-        />
+          />
         </div>
-        <br />
 
-      <h2>Registered Services</h2>
+        <div className="services-grid">
+          {services
+            .filter((service) =>
+              service.name
+                .toLowerCase()
+                .includes(searchTerm.toLowerCase())
+            )
+            .map((service) => (
+              <div
+                key={service._id}
+                className="service-card"
+              >
+                <h3>{service.name}</h3>
 
-      <div className="services-grid">
-        {services
-        .filter((service) =>
-            service.name
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase())
-        )
-        .map((service) => (
-            <div
-            key={service._id}
-            className="service-card"
-            >
-            <h3>{service.name}</h3>
+                <p>Owner: {service.owner}</p>
 
-            <p>Owner: {service.owner}</p>
-
-            <p>
-                Criticality:
-                <span
-                className={`criticality-badge ${getCriticalityClass(
-                    service.criticality
-                )}`}
+                <p>
+                  Criticality:
+                  <span
+                    className={`criticality-badge ${getCriticalityClass(
+                      service.criticality
+                    )}`}
+                  >
+                    {service.criticality}
+                  </span>
+                </p>
+                <button
+                  className="edit-btn"
+                  onClick={() =>
+                    setEditingService(service)
+                  }
                 >
-                {service.criticality}
-                </span>
-            </p>
-            </div>
-        ))}
+                  Edit
+                </button>
+                <button
+                  className="delete-btn"
+                  onClick={() =>
+                    deleteService(service._id)
+                  }
+                >
+                  Delete
+                </button>
+              </div>
+            ))}
         </div>
 
+      </div>
       
 
       <h2>Service Dependency Graph</h2>

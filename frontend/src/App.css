@@ -13,7 +13,8 @@ body {
 .dashboard-title {
   text-align: center;
   color: #1e293b;
-  margin-bottom: 5px;
+  margin-bottom: 10px;
+  font-size: 36px;
 }
 
 .dashboard-subtitle {
@@ -211,12 +212,6 @@ body {
   background-color: #fee2e2;
 }
 
-.history-item {
-  padding: 12px;
-  margin-bottom: 10px;
-  border-bottom: 1px solid #ddd;
-}
-
 .healthy-card {
   background-color: #dcfce7;
 }
@@ -258,4 +253,120 @@ body {
   font-size: 15px;
   font-weight: 500;
   word-break: break-word;
+}
+
+.navbar {
+  background: #0f172a;
+  color: white;
+  padding: 18px 30px;
+  border-radius: 12px;
+  margin-bottom: 30px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-links {
+  display: flex;
+  gap: 25px;
+}
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.nav-links a:hover {
+  color: #60a5fa;
+}
+
+.navbar h2 {
+  color: white;
+  margin: 0;
+  font-size: 24px;
+}
+
+.search-input {
+  width: 350px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+
+.create-service-card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 25px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.create-service-card form {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.create-service-card input,
+.create-service-card select {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.create-service-card button {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.delete-btn {
+  background: #dc2626;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.delete-btn:hover {
+  background: #b91c1c;
+}
+
+.edit-btn {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.edit-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.edit-modal form {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 350px;
 }

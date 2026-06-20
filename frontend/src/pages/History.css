@@ -1,0 +1,60 @@
+.history-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+}
+
+.history-card {
+  background: white;
+  border-radius: 18px;
+  padding: 25px;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  transition: 0.3s;
+}
+
+.history-card:hover {
+  transform: translateY(-5px);
+}
+
+.service-name {
+  margin-bottom: 15px;
+}
+
+.history-badge {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.high-impact {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.medium-impact {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.low-impact {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.history-stats {
+  display: flex;
+  justify-content: space-around;
+  margin: 20px 0;
+}
+
+.history-stats strong {
+  font-size: 28px;
+}
+
+.history-time {
+  color: #64748b;
+  font-size: 14px;
+}

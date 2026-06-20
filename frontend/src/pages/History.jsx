@@ -1,93 +1,90 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
-
-<div className="history-header">
-  <Link to="/">
-    <button className="back-btn">
-      ← Back to Dashboard
-    </button>
-  </Link>
-
-  <h1 className="history-title">
-    Simulation History
-  </h1>
-</div>
+import "./History.css";
 
 function History() {
   const [history, setHistory] = useState([]);
 
   useEffect(() => {
     const fetchHistory = async () => {
-      const res = await axios.get(
-        "http://localhost:5000/api/history"
-      );
+      try {
+        const res = await axios.get(
+          "http://localhost:5000/api/history"
+        );
 
-      setHistory(res.data);
+        setHistory(res.data);
+      } catch (error) {
+        console.error(error);
+      }
     };
 
     fetchHistory();
   }, []);
 
-    return (
+  return (
     <div className="app-container">
-
-        <div className="history-header">
+      <div className="history-header">
         <Link to="/">
-            <button className="back-btn">
+          <button className="back-btn">
             ← Back to Dashboard
-            </button>
+          </button>
         </Link>
 
         <h1 className="history-title">
-            Simulation History
+          Simulation History
         </h1>
-        </div>
+      </div>
 
+      <div className="history-grid">
         {history.map((item) => (
-        <div
+          <div
             key={item._id}
             className="history-card"
-        >
-            <div className="history-card-header">
-            <h3>
-                {item.failedServiceId?.name}
+          >
+            <h3 className="service-name">
+              🔥 {item.failedServiceId?.name}
             </h3>
 
             <span
-                className={`history-badge ${
+              className={`history-badge ${
                 item.impactLevel === "HIGH"
-                    ? "high-impact"
-                    : item.impactLevel === "MEDIUM"
-                    ? "medium-impact"
-                    : "low-impact"
-                }`}
+                  ? "high-impact"
+                  : item.impactLevel === "MEDIUM"
+                  ? "medium-impact"
+                  : "low-impact"
+              }`}
             >
-                {item.impactLevel}
+              {item.impactLevel}
             </span>
-            </div>
 
-            <div className="history-grid">
-            <div>
-                <span>Impacted Services</span>
-                <h2>{item.impactedCount}</h2>
-            </div>
+            <div className="history-stats">
+              <div>
+                <strong>
+                  {item.impactedCount}
+                </strong>
+                <p>Impacted Services</p>
+              </div>
 
-            <div>
-                <span>Severity Score</span>
-                <h2>{item.severityScore}</h2>
-            </div>
+              <div>
+                <strong>
+                  {item.severityScore}
+                </strong>
+                <p>Severity Score</p>
+              </div>
             </div>
 
             <p className="history-time">
-            {new Date(
+              🕒{" "}
+              {new Date(
                 item.createdAt
-            ).toLocaleString()}
+              ).toLocaleString()}
             </p>
-        </div>
+          </div>
         ))}
+      </div>
     </div>
-    );
+  );
 }
 
 export default History;
