@@ -6,6 +6,7 @@ import "reactflow/dist/style.css";
 import "../App.css";
 import CreateService from "../componenets/CreateService";
 import EditService from "../componenets/EditService";
+import CreateDependency from "../componenets/CreateDependency";
 import dagre from "dagre";
 
 const DashboardCard = ({
@@ -33,13 +34,27 @@ function Dashboard() {
         "http://localhost:5000/api/services"
       );
 
-      const dependenciesRes = await axios.get(
-        "http://localhost:5000/api/dependencies"
-      );
+      const dependenciesRes =
+        await axios.get(
+          "http://localhost:5000/api/dependencies"
+        );
 
       setServices(servicesRes.data);
-      setDependencies(dependenciesRes.data);
+      setDependencies(
+        dependenciesRes.data
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
+  const toggleStatus = async (id) => {
+    try {
+      await axios.patch(
+        `http://localhost:5000/api/services/${id}/status`
+      );
+
+      refreshServices();
     } catch (error) {
       console.error(error);
     }
@@ -284,6 +299,7 @@ const nodes =
       <div className="section-card">
 
         <CreateService onServiceCreated={refreshServices}/>
+        <CreateDependency services={services}onDependencyCreated={refreshServices}/>
 
         <h2 className="section-title">
           Registered Services
@@ -316,6 +332,43 @@ const nodes =
                 <h3>{service.name}</h3>
 
                 <p>Owner: {service.owner}</p>
+                <p>
+                  Status:
+                  <span
+                    className={`status-badge ${
+                      service.status === "HEALTHY"
+                        ? "healthy-status"
+                        : "failed-status"
+                    }`}
+                  >
+                    {service.status}
+                  </span>
+                </p>
+
+                {service.status === "FAILED" && (
+                  <button
+                    className="analyze-btn"
+                    onClick={async () => {
+                      try {
+                        const res = await axios.post(
+                          "http://localhost:5000/api/simulate",
+                          {
+                            failedServiceId:
+                              service._id,
+                          }
+                        );
+
+                        setSimulationResult(
+                          res.data
+                        );
+                      } catch (error) {
+                        console.error(error);
+                      }
+                    }}
+                  >
+                    Analyze Impact
+                  </button>
+                )}
 
                 <p>
                   Criticality:
@@ -334,6 +387,17 @@ const nodes =
                   }
                 >
                   Edit
+                </button>
+
+                <button
+                  className="status-btn"
+                  onClick={() =>
+                    toggleStatus(service._id)
+                  }
+                >
+                  {service.status === "HEALTHY"
+                    ? "Mark Failed"
+                    : "Mark Healthy"}
                 </button>
                 <button
                   className="delete-btn"

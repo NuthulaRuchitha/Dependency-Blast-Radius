@@ -370,3 +370,75 @@ body {
   gap: 12px;
   min-width: 350px;
 }
+
+.create-service-card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+}
+
+.create-service-card form {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.create-service-card select,
+.create-service-card input {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.create-service-card button {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.status-btn {
+  background: #f59e0b;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin: 0 8px;
+}
+
+.status-badge {
+  margin-left: 10px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.healthy-status {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.failed-status {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.analyze-btn {
+  background: #7c3aed;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.analyze-btn:hover {
+  background: #6d28d9;
+}

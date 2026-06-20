@@ -42,6 +42,27 @@ const updateService = async (req, res) => {
   }
 };
 
+const toggleStatus = async (req, res) => {
+  try {
+    const service = await Service.findById(
+      req.params.id
+    );
+
+    service.status =
+      service.status === "HEALTHY"
+        ? "FAILED"
+        : "HEALTHY";
+
+    await service.save();
+
+    res.status(200).json(service);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
 const deleteService = async (req, res) => {
   try {
 
@@ -73,5 +94,6 @@ module.exports = {
   createService,
   getServices,
   updateService,
+  toggleStatus,
   deleteService,
 };
