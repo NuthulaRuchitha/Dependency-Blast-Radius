@@ -249,9 +249,6 @@ const nodes =
 
       <div style={{ textAlign: "center", marginBottom: "20px" }}>
         <Link to="/history">
-            <button className="simulate-btn">
-            View Simulation History
-            </button>
         </Link>
       </div>
 
